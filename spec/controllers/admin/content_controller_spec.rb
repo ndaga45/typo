@@ -668,7 +668,26 @@ describe Admin::ContentController do
           response.should redirect_to(:action => 'index')
         end.should_not change(Article, :count)
       end
+    end  
+  end
 
+  describe 'merge articles' do
+
+    before do
+      Factory(:blog)
+      @user = Factory(:user, :profile => Factory(:profile_publisher))
+      request.session = { :user => @user.id }
+    end
+
+    it 'should not allow a non-admin to merge articles' do
+      @a1 = Factory(:article, :user => @user, :state => 'published')
+      @a2 = Factory(:article, :user => @user, :state => 'published')
+      lambda do
+        post :merge, :id => @a1.id, :merge_with => @a2.id
+        response.should redirect_to(:action => 'index')
+      end.should_not change(Article, :count)
     end
   end
+
+
 end

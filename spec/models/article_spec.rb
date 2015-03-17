@@ -628,7 +628,33 @@ describe Article do
         article.should be == already_exist_article
       end
     end
+  end
+
+  describe "merge method correctly combines two articles" do
+
+    before(:each) do
+      @a1 = Article.new(:title => "Some title", :body => "some text", :published => true)
+      @a1.save!
+      @a2 = Article.new(:title => "Some other title", :body => "some other text", :published => true)
+      @a2.save!
+      @a1.merge_with(@a2.id)
+    end
+
+    it "should properly combine the bodies of the articles" do
+      @a1.body.should be == "some text some other text"
+    end
+
+    it "should preserve the title of the first article" do
+      @a1.title should be == "Some title"
+    end
+
+    it "should delete the second article" do
+      assert_equal 1, Trigger.count
+    end
+
+    it "should properly add comments to the first article" do
+      @a1.comments.count.should == 2
+    end
 
   end
 end
-

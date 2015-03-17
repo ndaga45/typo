@@ -113,6 +113,19 @@ class Admin::ContentController < Admin::BaseController
     render :text => nil
   end
 
+  def merge
+    if current_user.admin?
+      id = params[:id]
+      @article = Article.find(id)
+      @article.merge_with(params[:merge_with])
+      flash[:notice] = "Article was sucessfully created."
+      redirect_to "/admin/content"
+    else
+      flash[:notice] = "You must be an admin to do that."
+      redirect_to "/admin/content"
+    end
+  end
+
   protected
 
   def get_fresh_or_existing_draft_for_article

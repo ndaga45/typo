@@ -55,6 +55,67 @@ And /^I am logged into the admin panel$/ do
   end
 end
 
+And /^I create a new user$/ do
+  visit '/admin/users/new'
+  fill_in 'user_login', :with => "new_user"
+  fill_in 'user_password', :with => "password"
+  fill_in 'user_password_confirmation', :with => "password"
+  fill_in 'user_email', :with => "ndaga45@gmail.com"
+  select 'Blog publisher', :from => 'user_profile_id'
+  click_button 'Save'
+  if page.respond_to? :should
+    page.should have_content("User was successfully created")
+  else
+    assert page.has_content?("User was successfully created")
+  end
+end
+
+And /^I log out$/ do
+  visit '/accounts/logout'
+  if page.respond_to? :should
+    page.should have_content('Login')
+  else
+    assert page.has_content?('Login')
+  end
+end
+
+And /^I sign in as a new user$/ do
+  visit '/accounts/login'
+  fill_in 'user_login', :with => 'new_user'
+  fill_in 'user_password', :with => 'password'
+  click_button 'Login'
+  if page.respond_to? :should
+    page.should have_content('Login successful')
+  else
+    assert page.has_content?('Login successful')
+  end
+end
+
+And /^I comment "(.*?)" as "(.*?)"$/ do |comment, commenter|
+  fill_in 'comment_author', :with => commenter
+  fill_in 'comment_body', :with => comment
+  click_button 'comment'
+  if page.respond_to? :should
+    page.should have_content('1 comment')
+  else
+    assert page.has_content?('1 comment')
+  end
+end
+
+
+And /^I write the article titled "(.*?)" with the content "(.*?)"$/ do |title, content|
+  fill_in 'article_title', :with => title
+  fill_in 'article__body_and_extended_editor', :with => content
+  click_button 'Publish'
+  if page.respond_to? :should
+    page.should have_content('Article was successfully created')
+  else
+    assert page.has_content?('Article was successfully created')
+  end
+end
+
+
+
 # Single-line step scoper
 When /^(.*) within (.*[^:])$/ do |step, parent|
   with_scope(parent) { When step }
